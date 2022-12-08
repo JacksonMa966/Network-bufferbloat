@@ -16,8 +16,7 @@ from multiprocessing import Process
 from argparse import ArgumentParser
 
 from monitor import monitor_qlen
-from statistics import stdev
-from statistics import mean
+import numpy as np
 import termcolor as T
 
 import sys
@@ -171,7 +170,7 @@ def get_timings(net, h1, h2):
 		time = h2.popen(fetch).communicate()[0]
 		timings.append(float(time))
 
-	return mean(timings)
+	return np.mean(timings)
 
 
 def bufferbloat():
@@ -244,8 +243,8 @@ def bufferbloat():
 
 	print("Writing results...")
 	f = open("./results.txt", "w+")
-	f.write("average: %s \n" % mean(measurements))
-	f.write("std dev: %s \n" % stdev(measurements))
+	f.write("average: %s \n" % np.mean(measurements))
+	f.write("std dev: %s \n" % np.std(measurements))
 	f.close()
 
 	stop_tcpprobe()
