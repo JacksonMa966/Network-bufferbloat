@@ -4,8 +4,9 @@ set -e
 # Note: Mininet must be run as root.  So invoke this shell script
 # using sudo.
 
-time=60
+time=100
 bwnet=10
+
 # TODO: If you want the RTT to be 4ms what should the delay on each
 # link be?  Set this value correctly.
 delay=1
