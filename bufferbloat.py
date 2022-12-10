@@ -139,7 +139,7 @@ def start_iperf(net):
 	# get host h1
 	h1 = net.get('h1')
 	# start a long lived TCP flow, sending data from h1 to h2, using iperf
-	h1.cmd("iperf -c %s -t %s > iperf.txt" % (h2.IP(), args.time), shell=True)
+	h1.cmd("iperf -c %s -t %s > %s/iperf.txt" % (h2.IP(), args.time, args.dir), shell=True)
 
 
 	
@@ -168,7 +168,7 @@ def start_ping(net):
 	h2 = net.get('h2')
 	# start a ping train from h1 to h2, measuring RTTs every 0.1 second
 	# spawn ping on 1, ping h2 periodically 10 times a second.
-	h1p = h1.popen("ping -c %s -i 0.1 %s > %sping.txt" % (args.time * 10, h2.IP(), args.dir), shell=True)
+	h1p = h1.popen("ping -c %s -i 0.1 %s > %s/ping.txt" % (args.time * 10, h2.IP(), args.dir), shell=True)
 	h1p.communicate()
 	
 """helper function: to initiate thewebpage fetch and measurese the delay.
