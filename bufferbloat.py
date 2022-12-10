@@ -100,9 +100,9 @@ class BBTopo(Topo):
 		# get max queue size of bottleneck link
 		maxq = args.maxq
 		# add link between h1 and s0
-		self.addLink(h1, switch, bw=bw_host, delay=delay, max_queue_size=maxq)
+		self.addLink(h1, switch, bw=bw_host, delay='%sms' % delay, max_queue_size=maxq)
 		# add link between s0 and h2
-		self.addLink(switch, h2, bw=bw_net, delay=delay, max_queue_size=maxq)
+		self.addLink(switch, h2, bw=bw_net, delay='%sms' % delay, max_queue_size=maxq)
 
 
 
@@ -139,7 +139,7 @@ def start_iperf(net):
 	# get host h1
 	h1 = net.get('h1')
 	# start a long lived TCP flow, sending data from h1 to h2, using iperf
-	h1.cmd("iperf -c %s -t %s > %s/iperf.txt" % (h2.IP(), args.time, args.dir), shell=True)
+	h1.cmd("iperf -c %s -t %s > %s/iperf.txt" % (h2.IP(), args.time, args.dir))
 
 
 	
@@ -182,10 +182,13 @@ def get_curl_time(h1, h2):
 	for i in range(3):
 		# feetch webpage from h1 to h2, and measure the delay time
 		fetch = "curl -o /dev/null -s -w %{time_total} " + h1.IP() + "/http/index.html"
-		delay_time = h2.cmd(fetch)
+		time = h2.popen(fetch).communicate()[0]
+		delay_times.append(float(time))
+		# fetch = "curl -o /dev/null -s -w %{time_total} " + h1.IP() + "/http/index.html"
+		# delay_time = h2.cmd(fetch)
 		
-		# append the delay time to the list
-		delay_times.append(float(delay_time))
+		# # append the delay time to the list
+		# delay_times.append(float(delay_time))
 	# return the average delay time
 	return avg(delay_times)
 
@@ -222,16 +225,21 @@ def bufferbloat():
 	#                  outfile='%s/q.txt' % (args.dir))
 
 	# Use the providded function to monitor the queue size at the switch
-	qmon = start_qmon(iface='s0-eth2', outfile='%s/q.txt' % (args.dir))
+	qmon = start_qmon(iface='s0-eth2', outfile='%s/q.txt' % args.dir)
 
 	# TODO: Start iperf, webservers, etc.
-
-	# start iperf
-	start_iperf(net)
-	# start ping
-	start_ping(net)
-	# start webserver	
+	iperf_proc = Process(target=start_iperf, args=(net,))
+	ping_proc = Process(target=start_ping, args=(net,))
+	iperf_proc.start()
+	ping_proc.start()
 	start_webserver(net)
+
+	# # start iperf
+	# start_iperf(net)
+	# # start ping
+	# start_ping(net)
+	# # start webserver	
+	# start_webserver(net)
 
 
 
