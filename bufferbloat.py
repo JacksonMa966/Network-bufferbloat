@@ -139,7 +139,7 @@ def start_iperf(net):
 	# get host h1
 	h1 = net.get('h1')
 	# start a long lived TCP flow, sending data from h1 to h2, using iperf
-	h1.popen("iperf -c %s -t %s -i 1 > iperf.txt" % (h2.IP(), args.time), shell=True)
+	h1.cmd("iperf -c %s -t %s > iperf.txt" % (h2.IP(), args.time), shell=True)
 
 
 	
@@ -180,8 +180,10 @@ host h1 (not from google!)
 def get_curl_time(h1, h2):
 	delay_times = []
 	for i in range(3):
-		# get the delay time for the webpage fetch
-		delay_time = h1.cmd("curl -o /dev/null -s -w %%{time_total} %s" % h2.IP())
+		# feetch webpage from h1 to h2, and measure the delay time
+		fetch = "curl -o /dev/null -s -w %{time_total} " + h1.IP() + "/http/index.html"
+		delay_time = h2.cmd(fetch)
+		
 		# append the delay time to the list
 		delay_times.append(float(delay_time))
 	# return the average delay time
@@ -208,7 +210,7 @@ def bufferbloat():
 
 	# Start all the monitoring processes
 	start_tcpprobe("cwnd.txt")
-	start_ping(net)
+	# start_ping(net)
 
 	# TODO: Start monitoring the queue sizes.  Since the switch I
 	# created is "s0", I monitor one of the interfaces.  Which
