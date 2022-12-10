@@ -168,7 +168,8 @@ def start_ping(net):
 	h2 = net.get('h2')
 	# start a ping train from h1 to h2, measuring RTTs every 0.1 second
 	# spawn ping on 1, ping h2 periodically 10 times a second.
-	h1.popen("ping -c %s -i 0.1 %s > %sping.txt" % (args.time * 10, h2.IP(), args.dir), shell=True)
+	h1p = h1.popen("ping -c %s -i 0.1 %s > %sping.txt" % (args.time * 10, h2.IP(), args.dir), shell=True)
+	h1p.communicate()
 	
 """helper function: to initiate thewebpage fetch and measurese the delay.
 Measure the time it takes to complete webpage transfer from h1 to h2 (say) 3 times. 
