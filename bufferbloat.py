@@ -180,7 +180,7 @@ def get_curl_time(h1, h2):
 	delay_times = []
 	for i in range(3):
 		# get the delay time for the webpage fetch
-		delay_time = h1.cmd("curl -o /dev/null -s -w %{time_total} %s" % h2.IP())
+		delay_time = h1.cmd("curl -o /dev/null -s -w %%{time_total} %s" % h2.IP())
 		# append the delay time to the list
 		delay_times.append(float(delay_time))
 	# return the average delay time
